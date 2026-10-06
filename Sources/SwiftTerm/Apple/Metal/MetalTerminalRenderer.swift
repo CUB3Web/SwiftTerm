@@ -417,7 +417,10 @@ final class MetalTerminalRenderer: NSObject, MTKViewDelegate {
             }
         }
         bufferPool.beginFrame()
-        let viewport = SIMD2<Float>(Float(view.drawableSize.width), Float(view.drawableSize.height))
+        // The viewport must match the texture we render into. Under a non-integral
+        // scale drawableSize is fractional while the texture is truncated to whole
+        // pixels; using drawableSize lets the sampler bleed neighbouring atlas glyphs.
+        let viewport = SIMD2<Float>(Float(drawable.texture.width), Float(drawable.texture.height))
 
         if let frame = drawData.frame {
             drawFrameData(frame, encoder: encoder, viewport: viewport)
